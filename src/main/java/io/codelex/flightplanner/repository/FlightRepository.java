@@ -5,38 +5,34 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 @Repository
 public class FlightRepository {
-    private Long count = 0L;
+    private Long id = 0L;
 
-    public Long getCount() {
-        return count;
+    public Long getId() {
+        return id;
     }
 
-    public void setCount(Long count) {
-        this.count = count;
-    }
-
-    List<Flight> flightsList = new ArrayList<>();
+    private List<Flight> flightsList = new ArrayList<>();
 
     public synchronized void addFlight(Flight flight) {
         if (checkIfFlightAlreadyExist(flight)) {
             throw new ResponseStatusException(HttpStatus.CONFLICT);
         }
-        if (flight.getFrom().equals(flight.getTo()) || checkStrangeDates(flight)) {
+        if (flight.getFrom().equals(flight.getTo()) || containsInvalidDates(flight)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
 
         flightsList.add(flight);
-        count++;
+        id++;
     }
 
     public synchronized void deleteFlight(Long id) {
-        flightsList.removeIf(flight -> Objects.equals(flight.getId(), id));
+        flightsList.removeIf(flight -> flight.getId().equals(id));
     }
 
     public void clearFlights() {
@@ -45,7 +41,7 @@ public class FlightRepository {
 
     public Flight findById(Long id) {
         for (Flight flight : flightsList) {
-            if (Objects.equals(flight.getId(), id)) {
+            if (flight.getId().equals(id)) {
                 return flight;
             }
         }
@@ -71,11 +67,11 @@ public class FlightRepository {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
         for (Flight flight : flightsList) {
-            String flightDate = String.valueOf(flight.getDepartureTime()).substring(0, 10);
+            LocalDate searchDepartureDate = LocalDate.parse(searchFlightRequest.getDepartureDate());
 
             if (flight.getFrom().getAirport().equalsIgnoreCase(searchFlightRequest.getFrom())
                     && flight.getTo().getAirport().equalsIgnoreCase(searchFlightRequest.getTo())
-                    && flightDate.equals(searchFlightRequest.getDepartureDate())) {
+                    && flight.getDepartureTime().toLocalDate().equals(searchDepartureDate)) {
                 searchList.add(flight);
             }
         }
@@ -85,19 +81,15 @@ public class FlightRepository {
 
     private boolean checkIfFlightAlreadyExist(Flight flight) {
         for (Flight f : flightsList) {
-            if (f.getFrom().equals(flight.getFrom())
-                    && f.getTo().equals(flight.getTo())
-                    && f.getCarrier().equals(flight.getCarrier())
-                    && f.getDepartureTime().equals(flight.getDepartureTime())
-                    && f.getArrivalTime().equals(flight.getArrivalTime())) {
+            if (f.matches(flight)) {
                 return true;
             }
         }
         return false;
     }
 
-    public boolean checkStrangeDates(Flight flight) {
-        return flight.getDepartureTime().equals(flight.getArrivalTime()) || (flight.getDepartureTime().isAfter(flight.getArrivalTime()));
+    public boolean containsInvalidDates(Flight flight) {
+        return flight.invalidDatesCheck(flight);
     }
 }
 

@@ -71,4 +71,21 @@ public class Flight {
         this.arrivalTime = arrivalTime;
     }
 
+    public boolean matches(Flight flight) {
+        if (from.equals(flight.getFrom())
+                && to.equals(flight.getTo())
+                && carrier.equals(flight.getCarrier())
+                && departureTime.equals(flight.getDepartureTime())
+                && arrivalTime.equals(flight.getArrivalTime())) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean invalidDatesCheck(Flight flight) {
+        if (flight.getDepartureTime().equals(flight.getArrivalTime()) || (flight.getDepartureTime().isAfter(flight.getArrivalTime()))) {
+            return true;
+        }
+        return false;
+    }
 }

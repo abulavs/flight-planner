@@ -34,11 +34,7 @@ public class FlightsService {
     }
 
     public Long getCount() {
-        return flightRepository.getCount();
-    }
-
-    public void setCount(Long count) {
-        flightRepository.setCount(count);
+        return flightRepository.getId();
     }
 
     public List<Airport> searchAirport(String search) {

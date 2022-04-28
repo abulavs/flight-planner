@@ -19,7 +19,7 @@ public class AdminController {
     @PutMapping("/flights")
     @ResponseStatus(value = HttpStatus.CREATED)
     public synchronized Flight addFlight(@RequestBody @Valid AddFlightRequest addFlightRequest) {
-        Flight flight = addFlightRequest.toMainFormat(flightsService.getCount());
+        Flight flight = addFlightRequest.toFlight(flightsService.getCount());
         flightsService.addFlight(flight);
         return flight;
     }

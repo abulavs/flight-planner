@@ -33,7 +33,7 @@ public class AddFlightRequest {
         this.arrivalTime = arrivalTime;
     }
 
-    public Flight toMainFormat(Long id) {
+    public Flight toFlight(Long id) {
         return new Flight(id, from, to, carrier, LocalDateTime.parse(departureTime, formatter), LocalDateTime.parse(arrivalTime, formatter));
     }
 
