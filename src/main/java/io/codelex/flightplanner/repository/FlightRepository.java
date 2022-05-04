@@ -23,7 +23,7 @@ public class FlightRepository {
         if (checkIfFlightAlreadyExist(flight)) {
             throw new ResponseStatusException(HttpStatus.CONFLICT);
         }
-        if (flight.getFrom().equals(flight.getTo()) || containsInvalidDates(flight)) {
+        if (flight.getFrom().equals(flight.getTo()) || flight.containsInvalidDates(flight)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
 
@@ -88,9 +88,6 @@ public class FlightRepository {
         return false;
     }
 
-    public boolean containsInvalidDates(Flight flight) {
-        return flight.invalidDatesCheck(flight);
-    }
 }
 
 

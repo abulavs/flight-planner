@@ -82,7 +82,7 @@ public class Flight {
         return false;
     }
 
-    public boolean invalidDatesCheck(Flight flight) {
+    public boolean containsInvalidDates(Flight flight) {
         if (flight.getDepartureTime().equals(flight.getArrivalTime()) || (flight.getDepartureTime().isAfter(flight.getArrivalTime()))) {
             return true;
         }
